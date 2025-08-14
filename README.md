@@ -213,7 +213,7 @@ Ce projet est sous licence MIT.
 
 ## 👨‍💻 Auteur
 
-**Jimmy Ramsamy-Naick**
+**Jimmy Ramsamynaick**
 
 ---
 
