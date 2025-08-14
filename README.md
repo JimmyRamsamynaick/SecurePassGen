@@ -4,6 +4,10 @@
 
 Une application moderne et sécurisée pour générer et analyser des mots de passe robustes, disponible en version web et desktop.
 
+> ⚠️ **STATUT ACTUEL** : Seule la version web GitHub Pages est actuellement fonctionnelle.  
+> 🌐 **Accès direct** : [https://jimmyramsamynaick.github.io/SecurePassGen/](https://jimmyramsamynaick.github.io/SecurePassGen/)  
+> 🚧 **Développement en cours** : Les versions desktop et serveur local sont en cours de développement.
+
 ![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)
 ![License](https://img.shields.io/badge/License-MIT-green.svg)
 ![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey.svg)
@@ -56,7 +60,27 @@ Une application moderne et sécurisée pour générer et analyser des mots de pa
 
 ## 🎮 Utilisation
 
-### Lanceur Universel (Recommandé)
+### 🌐 Version GitHub Pages (Actuellement Disponible)
+
+**Accès direct sans installation :**
+
+👉 **[https://jimmyramsamynaick.github.io/SecurePassGen/](https://jimmyramsamynaick.github.io/SecurePassGen/)**
+
+**Avantages :**
+- ✅ Fonctionne immédiatement
+- ✅ Aucune installation requise
+- ✅ Interface moderne et responsive
+- ✅ Compatible avec tous les navigateurs
+- ✅ Fonctionnement 100% côté client (sécurisé)
+- ✅ Accessible depuis n'importe quel appareil
+
+---
+
+### 🚧 Versions en Développement
+
+> ⚠️ **Note** : Les versions ci-dessous sont actuellement en cours de développement et peuvent ne pas fonctionner correctement.
+
+#### Lanceur Universel
 
 Le script `launcher.py` détecte automatiquement votre système et propose les meilleures options :
 
@@ -74,7 +98,7 @@ python launcher.py desktop
 python launcher.py console
 ```
 
-### Application Web (Recommandée)
+#### Application Web Locale
 
 ```bash
 python web_app.py
@@ -82,19 +106,13 @@ python web_app.py
 
 Puis ouvrez votre navigateur sur `http://localhost:8080`
 
-**Avantages :**
-- Interface moderne et responsive
-- Compatible avec tous les navigateurs
-- Pas de problèmes de compatibilité GUI
-- Meilleure expérience utilisateur
-
-### Application Desktop
+#### Application Desktop
 
 ```bash
 python main.py
 ```
 
-**Avantages :**
+**Avantages (une fois développée) :**
 - Application native
 - Fonctionne hors ligne
 - Intégration système
