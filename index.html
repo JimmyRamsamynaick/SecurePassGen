@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔐 SecurePassGen - Générateur de Mots de Passe Sécurisé</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .main-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+        }
+        .section-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            border: none;
+        }
+        .btn-generate {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border: none;
+            border-radius: 10px;
+            padding: 12px 30px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        .btn-generate:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+        .password-display {
+            font-family: 'Courier New', monospace;
+            font-size: 1.2rem;
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 15px;
+            word-break: break-all;
+        }
+        .strength-indicator {
+            height: 10px;
+            border-radius: 5px;
+            background: #e9ecef;
+            overflow: hidden;
+        }
+        .form-check-input:checked {
+            background-color: #667eea;
+            border-color: #667eea;
+        }
+        .range-slider {
+            background: linear-gradient(to right, #667eea, #764ba2);
+        }
+        .github-link {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+    <!-- Lien GitHub -->
+    <a href="https://github.com/jimmyramsamynaick/SecurePassGen" target="_blank" class="github-link btn btn-dark btn-sm">
+        <i class="fab fa-github"></i> GitHub
+    </a>
+
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="main-container p-4">
+                    <!-- En-tête -->
+                    <div class="text-center mb-5">
+                        <h1 class="display-4 fw-bold text-primary mb-3">
+                            🔐 SecurePassGen
+                        </h1>
+                        <p class="lead text-muted">Générateur de Mots de Passe Sécurisé</p>
+                        <p class="text-muted">Version statique pour GitHub Pages - Fonctionne entièrement côté client</p>
+                    </div>
+
+                    <div class="row">
+                        <!-- Configuration -->
+                        <div class="col-lg-6 mb-4">
+                            <div class="section-card p-4 h-100">
+                                <h3 class="h5 mb-4">
+                                    <i class="fas fa-cog text-primary me-2"></i>
+                                    Configuration
+                                </h3>
+                                
+                                <!-- Longueur -->
+                                <div class="mb-4">
+                                    <label for="length" class="form-label">Longueur du mot de passe</label>
+                                    <div class="d-flex align-items-center">
+                                        <input type="range" class="form-range me-3 flex-grow-1" 
+                                               id="length" min="4" max="64" value="12" 
+                                               oninput="updateLengthDisplay()">
+                                        <span id="lengthDisplay" class="badge bg-primary">12</span>
+                                    </div>
+                                </div>
+
+                                <!-- Types de caractères -->
+                                <div class="mb-4">
+                                    <label class="form-label">Types de caractères</label>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="lowercase" checked>
+                                        <label class="form-check-label" for="lowercase">
+                                            Minuscules (a-z)
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="uppercase" checked>
+                                        <label class="form-check-label" for="uppercase">
+                                            Majuscules (A-Z)
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="digits" checked>
+                                        <label class="form-check-label" for="digits">
+                                            Chiffres (0-9)
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="special" checked>
+                                        <label class="form-check-label" for="special">
+                                            Caractères spéciaux (!@#$%^&*)
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="excludeAmbiguous">
+                                        <label class="form-check-label" for="excludeAmbiguous">
+                                            Exclure caractères ambigus (0,O,1,l,I)
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <!-- Boutons de génération -->
+                                <div class="d-grid gap-2">
+                                    <button class="btn btn-generate text-white" onclick="generatePassword()">
+                                        <i class="fas fa-key me-2"></i>
+                                        Générer Mot de Passe
+                                    </button>
+                                    <button class="btn btn-outline-secondary" onclick="generateMultiple()">
+                                        <i class="fas fa-list me-2"></i>
+                                        Générer Plusieurs
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Résultat -->
+                        <div class="col-lg-6 mb-4">
+                            <div class="section-card p-4 h-100">
+                                <h3 class="h5 mb-4">
+                                    <i class="fas fa-shield-alt text-success me-2"></i>
+                                    Mot de Passe Généré
+                                </h3>
+                                
+                                <div class="mb-3">
+                                    <div id="passwordDisplay" class="password-display text-center">
+                                        Cliquez sur "Générer" pour créer un mot de passe sécurisé
+                                    </div>
+                                </div>
+                                
+                                <div class="d-grid">
+                                    <button id="copyBtn" class="btn btn-success" onclick="copyPassword()" disabled>
+                                        <i class="fas fa-copy me-2"></i>
+                                        Copier dans le Presse-papiers
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Analyse de Force -->
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <div class="section-card p-4">
+                                <h3 class="h5 mb-4">
+                                    <i class="fas fa-chart-line text-info me-2"></i>
+                                    Analyse de Force
+                                </h3>
+                                
+                                <div class="mb-3">
+                                    <label for="testPassword" class="form-label">Tester un mot de passe</label>
+                                    <input type="password" class="form-control" id="testPassword" 
+                                           placeholder="Entrez un mot de passe à analyser" 
+                                           oninput="analyzePassword()">
+                                </div>
+                                
+                                <div id="strengthResult" style="display: none;">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <span>Force: <span id="strengthText" class="badge"></span></span>
+                                        <span>Score: <span id="strengthScore"></span></span>
+                                    </div>
+                                    <div class="strength-indicator mb-3">
+                                        <div id="strengthBar" style="height: 100%; transition: all 0.3s ease;"></div>
+                                    </div>
+                                    <div id="strengthFeedback" class="text-muted"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal pour mots de passe multiples -->
+    <div class="modal fade" id="multiplePasswordsModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-list me-2"></i>
+                        Mots de Passe Générés
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="multiplePasswordsList"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let currentPassword = '';
+
+        // Mise à jour de l'affichage de la longueur
+        function updateLengthDisplay() {
+            const length = document.getElementById('length').value;
+            document.getElementById('lengthDisplay').textContent = length;
+        }
+
+        // Génération de mot de passe côté client
+        function generatePassword() {
+            const length = parseInt(document.getElementById('length').value);
+            const useLowercase = document.getElementById('lowercase').checked;
+            const useUppercase = document.getElementById('uppercase').checked;
+            const useDigits = document.getElementById('digits').checked;
+            const useSpecial = document.getElementById('special').checked;
+            const excludeAmbiguous = document.getElementById('excludeAmbiguous').checked;
+            
+            let chars = '';
+            
+            if (useLowercase) {
+                chars += 'abcdefghijklmnopqrstuvwxyz';
+            }
+            if (useUppercase) {
+                chars += 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            }
+            if (useDigits) {
+                chars += '0123456789';
+            }
+            if (useSpecial) {
+                chars += '!@#$%^&*()_+-=[]{}|;:,.<>?';
+            }
+            
+            if (excludeAmbiguous) {
+                chars = chars.replace(/[0O1lI]/g, '');
+            }
+            
+            if (!chars) {
+                alert('Veuillez sélectionner au moins un type de caractère.');
+                return;
+            }
+            
+            // Génération sécurisée avec crypto.getRandomValues
+            const array = new Uint32Array(length);
+            crypto.getRandomValues(array);
+            
+            let password = '';
+            for (let i = 0; i < length; i++) {
+                password += chars[array[i] % chars.length];
+            }
+            
+            currentPassword = password;
+            document.getElementById('passwordDisplay').textContent = currentPassword;
+            document.getElementById('copyBtn').disabled = false;
+            
+            // Analyser automatiquement
+            document.getElementById('testPassword').value = currentPassword;
+            analyzePassword();
+        }
+
+        // Génération multiple
+        function generateMultiple() {
+            const passwords = [];
+            
+            for (let i = 0; i < 5; i++) {
+                const length = parseInt(document.getElementById('length').value);
+                const useLowercase = document.getElementById('lowercase').checked;
+                const useUppercase = document.getElementById('uppercase').checked;
+                const useDigits = document.getElementById('digits').checked;
+                const useSpecial = document.getElementById('special').checked;
+                const excludeAmbiguous = document.getElementById('excludeAmbiguous').checked;
+                
+                let chars = '';
+                
+                if (useLowercase) chars += 'abcdefghijklmnopqrstuvwxyz';
+                if (useUppercase) chars += 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+                if (useDigits) chars += '0123456789';
+                if (useSpecial) chars += '!@#$%^&*()_+-=[]{}|;:,.<>?';
+                
+                if (excludeAmbiguous) {
+                    chars = chars.replace(/[0O1lI]/g, '');
+                }
+                
+                if (chars) {
+                    const array = new Uint32Array(length);
+                    crypto.getRandomValues(array);
+                    
+                    let password = '';
+                    for (let j = 0; j < length; j++) {
+                        password += chars[array[j] % chars.length];
+                    }
+                    passwords.push(password);
+                }
+            }
+            
+            if (passwords.length > 0) {
+                showMultiplePasswords(passwords);
+            }
+        }
+
+        // Affichage des mots de passe multiples
+        function showMultiplePasswords(passwords) {
+            const list = document.getElementById('multiplePasswordsList');
+            list.innerHTML = '';
+
+            passwords.forEach((password, index) => {
+                const item = document.createElement('div');
+                item.className = 'mb-3 p-3 border rounded';
+                item.innerHTML = `
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="password-display flex-grow-1 me-3">${password}</div>
+                        <button class="btn btn-sm btn-outline-primary" onclick="copyToClipboard('${password}')">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    </div>
+                `;
+                list.appendChild(item);
+            });
+
+            new bootstrap.Modal(document.getElementById('multiplePasswordsModal')).show();
+        }
+
+        // Copie dans le presse-papiers
+        async function copyPassword() {
+            if (currentPassword) {
+                await copyToClipboard(currentPassword);
+            }
+        }
+
+        async function copyToClipboard(text) {
+            try {
+                await navigator.clipboard.writeText(text);
+                
+                // Feedback visuel
+                const btn = event.target.closest('button');
+                const originalText = btn.innerHTML;
+                btn.innerHTML = '<i class="fas fa-check"></i> Copié!';
+                btn.classList.add('btn-success');
+                btn.classList.remove('btn-outline-primary');
+                
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                    btn.classList.remove('btn-success');
+                    btn.classList.add('btn-outline-primary');
+                }, 2000);
+            } catch (error) {
+                alert('Erreur lors de la copie: ' + error.message);
+            }
+        }
+
+        // Analyse de mot de passe côté client
+        function analyzePassword() {
+            const password = document.getElementById('testPassword').value;
+            
+            if (!password) {
+                document.getElementById('strengthResult').style.display = 'none';
+                return;
+            }
+
+            const analysis = analyzePasswordStrength(password);
+            displayStrengthAnalysis(analysis);
+        }
+
+        // Fonction d'analyse de force (convertie du Python)
+        function analyzePasswordStrength(password) {
+            let score = 0;
+            const feedback = [];
+            
+            // Longueur
+            if (password.length >= 12) {
+                score += 2;
+                feedback.push('✓ Longueur excellente (12+ caractères)');
+            } else if (password.length >= 8) {
+                score += 1;
+                feedback.push('✓ Longueur correcte (8+ caractères)');
+            } else {
+                feedback.push('✗ Longueur insuffisante (moins de 8 caractères)');
+            }
+            
+            // Types de caractères
+            if (/[a-z]/.test(password)) {
+                score += 1;
+                feedback.push('✓ Contient des minuscules');
+            }
+            
+            if (/[A-Z]/.test(password)) {
+                score += 1;
+                feedback.push('✓ Contient des majuscules');
+            }
+            
+            if (/[0-9]/.test(password)) {
+                score += 1;
+                feedback.push('✓ Contient des chiffres');
+            }
+            
+            if (/[!@#$%^&*()_+\-=\[\]{}|;:,.<>?]/.test(password)) {
+                score += 1;
+                feedback.push('✓ Contient des caractères spéciaux');
+            }
+            
+            // Évaluation finale
+            let strength, color;
+            if (score >= 5) {
+                strength = 'Très fort';
+                color = 'success';
+            } else if (score >= 3) {
+                strength = 'Fort';
+                color = 'warning';
+            } else if (score >= 2) {
+                strength = 'Moyen';
+                color = 'info';
+            } else {
+                strength = 'Faible';
+                color = 'danger';
+            }
+            
+            return {
+                strength: strength,
+                score: score,
+                max_score: 6,
+                color: color,
+                feedback: feedback
+            };
+        }
+
+        // Affichage de l'analyse de force
+        function displayStrengthAnalysis(analysis) {
+            const resultDiv = document.getElementById('strengthResult');
+            const strengthText = document.getElementById('strengthText');
+            const strengthBar = document.getElementById('strengthBar');
+            const strengthScore = document.getElementById('strengthScore');
+            const strengthFeedback = document.getElementById('strengthFeedback');
+
+            // Afficher le résultat
+            resultDiv.style.display = 'block';
+
+            // Texte de force
+            strengthText.textContent = analysis.strength;
+            strengthText.className = `badge bg-${analysis.color}`;
+
+            // Barre de progression
+            const percentage = (analysis.score / analysis.max_score) * 100;
+            strengthBar.style.width = '100%';
+            strengthBar.style.background = `linear-gradient(to right, 
+                var(--bs-${analysis.color}) ${percentage}%, 
+                #e9ecef ${percentage}%)`;
+
+            // Score
+            strengthScore.textContent = `${analysis.score}/${analysis.max_score}`;
+
+            // Feedback
+            strengthFeedback.innerHTML = analysis.feedback.map(item => 
+                `<div class="small mb-1">${item}</div>`
+            ).join('');
+        }
+
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', function() {
+            updateLengthDisplay();
+        });
+    </script>
+</body>
+</html>
